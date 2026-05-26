@@ -8,11 +8,11 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-# Load model once at startup
+# Load model ONCE
 model = load_model('model/cnn_model.h5')
 CLASSES = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
 
-# 1. Define helper function at the top level
+# 1. Define helper at top level
 def save_to_history(filename, label, confidence):
     file_exists = os.path.isfile('history.csv')
     with open('history.csv', 'a', newline='') as f:
@@ -21,11 +21,14 @@ def save_to_history(filename, label, confidence):
             writer.writerow(['Timestamp', 'Filename', 'Prediction', 'Confidence'])
         writer.writerow([datetime.now().strftime("%Y-%m-%d %H:%M:%S"), filename, label, confidence])
 
-# 2. Main Route
+# 2. Main route
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
+        if 'file' not in request.files: return "No file uploaded"
         file = request.files['file']
+        if file.filename == '': return "No file selected"
+        
         filepath = os.path.join('static/uploads', file.filename)
         file.save(filepath)
         
@@ -33,11 +36,12 @@ def index():
         img_array = image.img_to_array(img) / 255.0
         img_array = np.expand_dims(img_array, axis=0)
         
-        # 3. Predict first, THEN save
+        # PREDICT FIRST
         prediction = model.predict(img_array)
         class_idx = np.argmax(prediction)
         confidence = float(np.max(prediction))
         
+        # SAVE SECOND
         save_to_history(file.filename, CLASSES[class_idx], round(confidence * 100, 2))
         
         return render_template('results.html', 
@@ -52,9 +56,9 @@ def view_history():
     if os.path.isfile('history.csv'):
         with open('history.csv', 'r') as f:
             reader = csv.reader(f)
-            next(reader, None) 
+            next(reader, None)
             history = list(reader)
     return render_template('history.html', history=history)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False) # Keep debug=False for production
