@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Prediction Result</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Prediction Result</h1>
+        
+        <div class="image-box">
+            <img src="{{ img_path }}" style="max-width: 300px; border: 5px solid #ddd; border-radius: 8px;">
+        </div>
+        
+        <h3>Predicted Class: <strong style="color: #2c3e50;">{{ label }}</strong></h3>
+        <p>Confidence Score: {{ confidence }}%</p>
+        
+        <div style="width: 300px; background: #eee; height: 25px; margin: 10px auto; border-radius: 5px;">
+            <div style="width: {{ confidence }}%; background: #27ae60; height: 100%; border-radius: 5px;"></div>
+        </div>
+        
+        <br>
+        <a href="/" class="btn">Try Another Image</a>
+        <a href="/history" class="btn" style="background-color: #3498db;">View History</a>
+    </div>
+</body>
+</html>
