@@ -7,10 +7,12 @@ import csv
 from datetime import datetime
 
 app = Flask(__name__)
+
+# Load model once at startup
 model = load_model('model/cnn_model.h5')
 CLASSES = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
 
-# 1. Define helper functions at the top level
+# 1. Define helper function at the top level
 def save_to_history(filename, label, confidence):
     file_exists = os.path.isfile('history.csv')
     with open('history.csv', 'a', newline='') as f:
@@ -31,11 +33,11 @@ def index():
         img_array = image.img_to_array(img) / 255.0
         img_array = np.expand_dims(img_array, axis=0)
         
+        # 3. Predict first, THEN save
         prediction = model.predict(img_array)
         class_idx = np.argmax(prediction)
         confidence = float(np.max(prediction))
         
-        # Now call the history function with the calculated values
         save_to_history(file.filename, CLASSES[class_idx], round(confidence * 100, 2))
         
         return render_template('results.html', 
@@ -50,7 +52,7 @@ def view_history():
     if os.path.isfile('history.csv'):
         with open('history.csv', 'r') as f:
             reader = csv.reader(f)
-            next(reader) 
+            next(reader, None) 
             history = list(reader)
     return render_template('history.html', history=history)
 
