@@ -1,7 +1,6 @@
 streamlit
 tensorflow-cpu
 numpy==1.26.4
-python -m pip install --upgrade pip
 pillow
 matplotlib
 seaborn
