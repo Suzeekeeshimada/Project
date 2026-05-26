@@ -1,9 +1,8 @@
-streamlit
-tensorflow==2.16.1
+flask
+tensorflow-cpu
+gunicorn
 numpy==1.26.4
 pillow
 matplotlib
 seaborn
 scikit-learn
-flask
-gunicorn
